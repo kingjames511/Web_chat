@@ -6,7 +6,7 @@ import { chatStore } from "../../store/ChatStore";
 
 const ChatList = () => {
   const { currentUser } = useUserStore();
-  const { changeChat} = chatStore()
+  const { changeChat } = chatStore();
   const [chats, setChat] = useState<any[]>([]); // Fixed: Changed from "" to []
 
   useEffect(() => {
@@ -38,18 +38,17 @@ const ChatList = () => {
     };
   }, [currentUser.id]);
 
-  
- const handleSelectChat = (chat: any) => {
-changeChat(chat.chatId, chat.user)
-
- };
+  const handleSelectChat = (chat: any) => {
+    changeChat(chat.chatId, chat.user);
+  };
 
   return (
     <section className="mx-4 px-4 w-full">
       <div className="space-y-1">
         {chats.map((chat: any) => (
           <div
-            key={chat.id} onClick={ () => handleSelectChat(chat)}
+            key={chat.id}
+            onClick={() => handleSelectChat(chat)}
             className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-900/50 cursor-pointer transition-colors border-b border-slate-700/30"
           >
             <img
@@ -60,7 +59,7 @@ changeChat(chat.chatId, chat.user)
 
             <div className="flex flex-col">
               <h3 className="font-medium text-sm">{chat.user.username}</h3>
-              <p className="text-xs text-gray-400">{chat.user.lastMessage}</p>
+              <p className="text-xs text-gray-400">{chat.lastMessage}</p>
             </div>
           </div>
         ))}

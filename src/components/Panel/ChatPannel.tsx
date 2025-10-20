@@ -1,13 +1,22 @@
-import { doc, onSnapshot, type DocumentData } from "firebase/firestore";
+import {
+  arrayUnion,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+  type DocumentData,
+} from "firebase/firestore";
 
 import { useEffect } from "react";
 import { db } from "../lib/firebase";
 import { useState } from "react";
 import { chatStore } from "../../store/ChatStore";
+import { useUserStore } from "../../store/store";
 
 const ChatPanel = () => {
-  const { chatId } = chatStore();
-  const [text, setText] = useState<string>('')
+  const { chatId, User } = chatStore();
+  const { currentUser } = useUserStore();
+  const [text, setText] = useState<string>("");
   const [chats, setChat] = useState<DocumentData | null>(null);
   useEffect(() => {
     if (!chatId) return;
@@ -18,7 +27,50 @@ const ChatPanel = () => {
       subscribe();
     };
   }, [chatId]);
-  
+
+  const handleSend = async () => {
+    if (!chatId) {
+      console.warn("No chat selected. Can't send message.");
+      return;
+    }
+    console.log("Sending message:", text);
+    try {
+      await updateDoc(doc(db, "chats", chatId), {
+        message: arrayUnion({
+          senderId: "currentUser.id",
+          text,
+          createdAt: Date.now(),
+        }),
+      });
+      const UserIDs = [currentUser.id, User.id];
+      UserIDs.forEach(async (uid) => {
+        const userChatsRef = doc(db, "userchats", uid);
+        const userChatsSnapShot = await getDoc(userChatsRef);
+
+        if (userChatsSnapShot.exists()) {
+          const userchatsData = userChatsSnapShot.data();
+
+          const chatIndex = userchatsData.chats.findIndex(
+            (chat: any) => chat.chatId === chatId
+          );
+          (userchatsData.chats[chatIndex].lastMessage = text),
+            (userchatsData.chats[chatIndex].isSeen =
+              uid === currentUser.id ? true : false),
+            (userchatsData.chats[chatIndex].updatedAt = Date.now());
+
+          await updateDoc(userChatsRef, {
+            chats: userchatsData.chats,
+          });
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      console.log("message sent");
+      setText("");
+    }
+  };
+
   return (
     <section className="flex-[2] h-[90vh] flex flex-col">
       {/* Header */}
@@ -85,12 +137,17 @@ const ChatPanel = () => {
           <input
             type="text"
             placeholder="Type a message..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
             className="flex-1 bg-slate-900/75 p-3 rounded-lg outline-none border-none text-sm"
           />
           <button className="bg-blue-600 p-3 rounded-lg hover:bg-blue-700 transition-colors">
             <img src="./emoji.png" alt="" className="w-5 h-5" />
           </button>
-          <button className="bg-blue-600 p-3 rounded-lg hover:bg-blue-700 transition-colors">
+          <button
+            onClick={() => handleSend()}
+            className="bg-blue-600 p-3 rounded-lg hover:bg-blue-700 transition-colors"
+          >
             Send
           </button>
         </div>

@@ -2,9 +2,11 @@ import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useUserStore } from "../../store/store";
 import { useEffect, useState } from "react";
 import { db } from "../lib/firebase";
+import { chatStore } from "../../store/ChatStore";
 
 const ChatList = () => {
   const { currentUser } = useUserStore();
+  const { changeChat} = chatStore()
   const [chats, setChat] = useState<any[]>([]); // Fixed: Changed from "" to []
 
   useEffect(() => {
@@ -36,14 +38,18 @@ const ChatList = () => {
     };
   }, [currentUser.id]);
 
-  console.log(chats);
+  
+ const handleSelectChat = (chat: any) => {
+changeChat(chat.chatId, chat.user)
+
+ };
 
   return (
     <section className="mx-4 px-4 w-full">
       <div className="space-y-1">
         {chats.map((chat: any) => (
           <div
-            key={chat.id}
+            key={chat.id} onClick={ () => handleSelectChat(chat)}
             className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-900/50 cursor-pointer transition-colors border-b border-slate-700/30"
           >
             <img

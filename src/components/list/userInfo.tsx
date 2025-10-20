@@ -87,10 +87,14 @@ const UserInfo = () => {
   console.log(searchResults, "here");
 
   return (
-    <section className="mx-4 px-4 w-full relative">
+    <section className="mx-4 p-4 w-full relative">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
-          <img src="./avatar.png" className="w-10 h-10 rounded-full" alt="" />
+          <img
+            src={currentUser.avatar || "./avatar.png"}
+            className="w-10 h-10 rounded-full"
+            alt=""
+          />
           <h2 className="text-lg font-medium">{currentUser.username}</h2>
         </div>
         <div className="flex gap-4">

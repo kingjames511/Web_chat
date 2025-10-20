@@ -9,8 +9,10 @@ import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./components/lib/firebase";
 import { Navigate } from "react-router-dom";
+import { chatStore } from "./store/ChatStore";
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { currentUser, isLoading } = useUserStore();
+  const { chatId } = chatStore();
 
   if (isLoading) {
     return <div>Loading...</div>; // Or your loading component
@@ -19,6 +21,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
+  
+  
 
   return <>{children}</>;
 }

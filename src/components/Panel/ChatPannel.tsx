@@ -1,49 +1,24 @@
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, type DocumentData } from "firebase/firestore";
 
 import { useEffect } from "react";
 import { db } from "../lib/firebase";
 import { useState } from "react";
+import { chatStore } from "../../store/ChatStore";
 
 const ChatPanel = () => {
-  const [chats, setChat] = useState(null);
+  const { chatId } = chatStore();
+  const [text, setText] = useState<string>('')
+  const [chats, setChat] = useState<DocumentData | null>(null);
   useEffect(() => {
-    const subscribe = onSnapshot(
-      doc(db, "chats", "jYFC967SCAcSRwQ1W6jF"),
-      (res) => {
-        setChat(res.data());
-      }
-    );
+    if (!chatId) return;
+    const subscribe = onSnapshot(doc(db, "chats", chatId), (res) => {
+      return setChat(res.data() ?? null);
+    });
     return () => {
       subscribe();
     };
-  }, []);
-  const messages = [
-    {
-      id: 1,
-      text: "Quam.",
-      time: "1 min ago",
-      isOwn: false,
-    },
-    {
-      id: 2,
-      text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus quis quae qui! Sint asperiores vero nobis deserunt vitae, repellendus, optio impedit alus reprehenderit dolorum nihil magnam alias, odit quam.",
-      time: "1 min ago",
-      isOwn: true,
-    },
-    {
-      id: 3,
-      text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus quis quae qui! Sint asperiores vero nobis deserunt vitae, repellendus, optio impedit alus reprehenderit dolorum nihil magnam alias, odit quam.",
-      time: "1 min ago",
-      isOwn: false,
-    },
-    {
-      id: 4,
-      image: "./photo.jpg",
-      time: "1 min ago",
-      isOwn: true,
-    },
-  ];
-
+  }, [chatId]);
+  
   return (
     <section className="flex-[2] h-[90vh] flex flex-col">
       {/* Header */}
@@ -66,32 +41,33 @@ const ChatPanel = () => {
 
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex flex-col ${
-              message.isOwn ? "items-end" : "items-start"
-            }`}
-          >
-            {message.text && (
-              <div
-                className={`max-w-md p-3 rounded-lg ${
-                  message.isOwn
-                    ? "bg-blue-600 text-white"
-                    : "bg-slate-800/75 text-white"
-                }`}
-              >
-                <p className="text-sm">{message.text}</p>
-              </div>
-            )}
-            {message.image && (
-              <div className="max-w-md">
-                <img src={message.image} alt="" className="rounded-lg w-full" />
-              </div>
-            )}
-            <span className="text-xs text-gray-400 mt-1">{message.time}</span>
-          </div>
-        ))}
+        {chatId &&
+          chats?.message?.map((message: any) => (
+            <div
+              key={message.id}
+              className={`flex flex-col ${
+                message.text ? "items-end" : "items-start"
+              }`}
+            >
+              {message.text && (
+                <div
+                  className={`max-w-md p-3 rounded-lg ${
+                    message.text
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-800/75 text-white"
+                  }`}
+                >
+                  <p className="text-sm">{message.text}</p>
+                </div>
+              )}
+              {message.img && (
+                <div className="max-w-md">
+                  <img src={message.img} alt="" className="rounded-lg w-full" />
+                </div>
+              )}
+              {/* <span className="text-xs text-gray-400 mt-1">{message.time}</span> */}
+            </div>
+          ))}
       </div>
 
       {/* Input Area */}

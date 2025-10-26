@@ -9,10 +9,9 @@ import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./components/lib/firebase";
 import { Navigate } from "react-router-dom";
-import { chatStore } from "./store/ChatStore";
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { currentUser, isLoading } = useUserStore();
-  const { chatId } = chatStore();
 
   if (isLoading) {
     return <div>Loading...</div>; // Or your loading component
@@ -30,22 +29,23 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function App() {
   const { fetchUserInfo } = useUserStore();
   useEffect(() => {
-    const unsubcrible = onAuthStateChanged(auth, (user) => {
+      const unsubcrible = onAuthStateChanged(auth, (user) => {
       if (user) {
         fetchUserInfo(user.uid);
       }
     });
     return () => {
-      unsubcrible();
+        unsubcrible();
     };
   }, [fetchUserInfo]);
   return (
-    <div className="App">
+      <div className="App overflow-hiddenw">
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-in" element={<SignPage />} />
+            <Route path='/home' element={<Layout/>}/>
 
           <Route
             path="/home"

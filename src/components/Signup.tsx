@@ -36,7 +36,8 @@ export default function SignPage() {
   console.log(currentUser);
 
   return (
-    <div className="flex h-[90vh] bg-black text-white">
+      <div className="flex justify-center items-center h-full  text-white">
+          <div className='flex justify-between  items-center h-screen w-[80%]'>
       {/* Left Section - Login Form */}
       <div className="w-full md:w-1/2 flex flex-col justify-center px-12 md:px-20">
         <div className="mb-12 ">
@@ -87,7 +88,7 @@ export default function SignPage() {
           {/* Sign In Button */}
           <button
             onClick={handleSignIn}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors"
+            className="w-full bg-transparent border border-gray-700 hover:border-white text-white font-semibold py-3 rounded-lg transition-colors"
           >
             {loading ? <Loader /> : "login in"}
           </button>
@@ -108,7 +109,7 @@ export default function SignPage() {
       </div>
 
       {/* Right Section - Image/Content */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-gray-800 to-gray-900 items-center justify-center p-12 relative overflow-hidden">
+              <div className="hidden md:flex md:w-1/2 h-full items-center justify-center p-12 relative overflow-hidden">
         <div className="text-center z-10">
           <h2 className="text-3xl font-light mb-4 leading-relaxed">
             A new way to experience real estate
@@ -121,7 +122,7 @@ export default function SignPage() {
         </div>
 
         {/* Decorative Pattern */}
-        <div className="absolute right-0 bottom-0 w-96 h-96">
+                  <div className="absolute right-0 top-60 w-96 h-96">
           {[...Array(12)].map((_, i) => (
             <div
               key={i}
@@ -138,6 +139,7 @@ export default function SignPage() {
           ))}
         </div>
       </div>
+          </div>
     </div>
   );
 }

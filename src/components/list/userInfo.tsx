@@ -91,11 +91,11 @@ const UserInfo = () => {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <img
-            src={currentUser.avatar || "./avatar.png"}
+              src={currentUser?.avatar || "./avatar.png"}
             className="w-10 h-10 rounded-full"
             alt=""
           />
-          <h2 className="text-lg font-medium">{currentUser.username}</h2>
+            <h2 className="text-lg font-medium">{currentUser?.username}</h2>
         </div>
         <div className="flex gap-4">
           <img src="./more.png" alt="" className="w-5 h-5 cursor-pointer" />
